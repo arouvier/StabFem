@@ -1,5 +1,7 @@
-global ff ffdir ffdatadir sfdir verbosity
+global ff ffMPI ffdir ffdatadir sfdir verbosity 
 
+% TODO : David We need to define a global variable in windows and unix
+% for ff-mpirun (or equivanlent)
 % THE ROLE OF THIS FUNCTION IS TO POSITION THE following global variables :
 % ff -> adress with full path of the FreeFem++ executable
 % ffdir -> path of the FreeFem sources of the project
@@ -7,25 +9,33 @@ global ff ffdir ffdatadir sfdir verbosity
 % ffdatadir -> path where to store the results (recommended is ./WORK) 
 
 if(isunix)
-ff = '/PRODCOM/FREEFEM/Ubuntu12.04/3.29/bin/FreeFem++-nw'; % on IMFT network
+
+ff = '/PRODCOM/FREEFEM/Ubuntu12.04/3.29/bin/FreeFem++ -v 0'; % on IMFT network
+ffMPI = 'ff-mpirun';
 end
 if(ismac)
-ff = '/usr/local/bin/FreeFem++ -nw';
+ff = '/usr/local/bin/FreeFem++ -v 0';
+ffMPI = 'ff-mpirun';
+
 % NB normally this is where the FreeFem++ executable should be on a mac.
 % If not the case, either do a symbolic link (recommended) or replace with
 % the right one. option "-nw" is better to discard the ff++ graphical output. 
 % below are possible choices for various contributors :
 %ff = '/usr/local/ff++/openmpi-2.1/3.60/bin/FreeFem++'; % old syntax for David
-%ff = '/usr/local/ff++/bin/FreeFem++ -nw'; for Flavio
+%ff = '/usr/local/ff++/bin/FreeFem++'; for Flavio
 end
 if(ispc)
-    ff = 'FreeFem++ -v 0'; % for windows systems
+    ff = 'FreeFem++ -nw -v 0'; % for windows systems
+    ffMPI = '';
 end
 
 sfdir = '../SOURCES_MATLAB/'; 
 ffdir = '../SOURCES_FREEFEM/';
 
-addpath(sfdir);
+
+
+
+
 
 % This is the recommended implementation on most systems. 
 % In case StabFem is not in your root directory you may adapt. Bellow a few
@@ -37,7 +47,13 @@ addpath(sfdir);
 %sfdir = '/Users/fabred/StabFem/SOURCES_MATLAB/'; % where to find the matlab drivers
 %ffdir = '/Users/fabred/StabFem/SOURCES_FREEFEM/'; % where to find the freefem scripts
 
-ffdatadir = '.\WORK\';
+%sfdir = '/home/jsagg/Sources/StabFem/SOURCES_MATLAB/'; 
+%ffdir = '/home/jsagg/Sources/StabFem/SOURCES_FREEFEM/';
+
+addpath(sfdir);
+
+
+ffdatadir = './WORK/';
 
 verbosity = 1;
 

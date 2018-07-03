@@ -91,7 +91,17 @@ else % Adaptation to base flow + mode (or other specified field)
     if(strcmp(baseflow.mesh.problemtype,'AxiXR')==1)
         mycp([ffdatadir 'Eigenmode.txt'],[ffdatadir 'AdaptField.txt']);
         command = ['echo UVWP | ',ff,' ',ffdir,'Adapt_Mode.edp'];
-        
+    elseif(strcmp(baseflow.mesh.problemtype,'2DComp')==1)
+        if(strcmp(eigenmode.type,'D')==1)
+            command = ['echo Comp | ',ff,' ',ffdir,'Adapt_Mode.edp'];
+            system(['cp ',ffdatadir,'Eigenmode.txt ',ffdatadir,'AdaptField.txt']);
+        elseif(strcmp(eigenmode.type,'A')==1)
+             command = ['echo Comp | ',ff,' ',ffdir,'Adapt_Mode.edp'];
+            system(['cp ',ffdatadir,'EigenmodeA.txt ',ffdatadir,'AdaptField.txt']);
+        else %if(strcmp(eigenmode.type,'S')==1)
+             command = ['echo Sensitivity | ',ff,' ',ffdir,'Adapt_Mode.edp'];
+            system(['cp ',ffdatadir,'Sensitivity.txt ',ffdatadir,'AdaptField.txt']);
+        end
     elseif (strcmp(baseflow.mesh.problemtype,'2D')==1)
         if(strcmp(eigenmode.type,'D')==1)
             command = ['echo UVP | ',ff,' ',ffdir,'Adapt_Mode.edp'];
@@ -108,7 +118,7 @@ else % Adaptation to base flow + mode (or other specified field)
     end
    error = 'ERROR : FreeFem adaptmesh aborted';
     status=mysystem(command,'skip');
-    if(status~=0)
+    if(status~=0&&status~=141)
         mymv([ffdatadir 'mesh_ans.msh'],[ffdatadir 'mesh.msh']);
         mymv([ffdatadir 'BaseFlow_ans.txt'],[ffdatadir 'BaseFlow.txt']);
         mymv([ffdatadir 'BaseFlow_ans.txt'],[ffdatadir 'BaseFlow_guess.txt']);
@@ -135,8 +145,9 @@ end
     % recomputing base flow after adapt
 %      mycp('mesh_adapt.msh','mesh.msh');
 %      mycp('BaseFlow_adaptguess.txt','BaseFlow_guess.txt');
-    baseflowNew = baseflow; % initialise structure
-    baseflowNew.mesh=importFFmesh([ffdatadir 'mesh.msh']);
+%    baseflowNew = baseflow; % initialise structure
+    meshNew=importFFmesh([ffdatadir 'mesh.msh'])
+    baseflowNew = importFFdata(meshNew,'BaseFlow_Adapted.ff2m')
     
     baseflowNew = SF_BaseFlow(baseflowNew,'Re',baseflow.Re,'type','NEW');
     if(baseflowNew.iter>0)

@@ -221,7 +221,7 @@ real Fx0 = Drag(nu,ubx,uby,ubp);
 real Fxeps2 = (Drag(nu,uepsx,uepsy,uepsp)-Drag(1,ubx,uby,0));
 real FxA20 = real(Drag(nu,u20x,u20y,u20p));
 complex FxA22 = Drag(nu,u22x,u22y,u22p);
-complex FyA1 = Lift(1/Re,u1x,u1y,u1p); // Mind that the "real" lift is actually twice this value because of the complex conjugate. 
+complex FyA1 = Lift(1/Re,u1x,u1y,u1p)*2;
 
 
 cout << " Fx associated to order epsilon correction : " << Fxeps2 << endl;
@@ -276,7 +276,7 @@ real AAA = sqrt(real(Lambda)/real(Nu0+Nu2)); /// amplitude/sqrt(eps) ; value dep
 cout << endl << endl << "######### SUMMARY : ##############" << endl << endl;
 
 cout << endl << "  >>  Amplitude :  A = " << AAA << " * epsilon^(1/2) " << endl;
-cout << "  >>  Energy-Amplitude A_E = " << AAA*sqrt(2*int2d(th)(abs(u1x)^2+abs(u1y)^2)) << " * eps " << endl;
+cout << "  >>  In terms of Energy = " << AAA*sqrt(2*int2d(th)(abs(u1x)^2+abs(u1y)^2)) << " * eps " << endl;
 cout << "  >>  In terms of Lift force : Fy = [" << AAA*FyA1 << " exp(i omega0 t) + c.c. ] * eps" << endl;
 cout << "                             : Fy = " << real(AAA*FyA1*2) << " cos(omega0 t) + " 
                                                      << -imag(AAA*FyA1*2) << " sin(omega0 t) ] * eps" << endl;
@@ -329,18 +329,18 @@ cout << endl << "########################################################" << en
 	     file << "real Rec complex eigenvalue complex Lambda complex nu0 complex nu2 real Aeps complex Fyeps" 
 	          << " real Fx0 real Fxeps2 real FxA20 complex FxA22 real Fxeps20 complex Fxeps22" << endl << endl ; 
 	     file << ReC << endl 
-			  << 0 << " " << omegaC  << endl 
-			  << real(Lambda) << " " << imag(Lambda) << endl 
-			  << real(Nu0) << " " << imag(Nu0) << endl 
-			  << real(Nu2) << " " << imag(Nu2) <<  endl 
+			  << 0 << endl << omegaC  << endl 
+			  << real(Lambda) << endl << imag(Lambda) << endl 
+			  << real(Nu0) << endl << imag(Nu0) << endl 
+			  << real(Nu2) << endl << imag(Nu2) <<  endl 
 			  << AAA*sqrt(2*int2d(th)(abs(u1x)^2+abs(u1y)^2)) << endl
-			  << real(AAA*FyA1) << " " << imag(AAA*FyA1) << endl
+			  << real(AAA*FyA1) << endl << imag(AAA*FyA1) << endl
 			  << Fx0 << endl 
 			  << Fxeps2 << endl
 			  << FxA20 << endl  
-			  << " " << real(FxA22) << " " << imag(FxA22) << endl
+			  << endl << real(FxA22) << endl << imag(FxA22) << endl
 			  << real(FxA20*AAA^2) << endl  
-			  << " " << real(FxA22*AAA^2) << " " << imag(FxA22*AAA^2) << endl ;
+			  << endl << real(FxA22*AAA^2) << endl << imag(FxA22*AAA^2) << endl ;
 
 };
 
@@ -368,7 +368,7 @@ SFWriteBaseFlow(ffdatadir+"MeanFlow_guess.ff2m",um,"MeanFlow",1);
  	ofstream file(ffdatadir+"SelfConsistentMode_guess.txt");
    	file << u1x[] ;	
    	file << endl << endl << Re << endl
-   	<< endl << 0 << "   " << omegaC  << endl;
+   	<< endl << 0 << endl << omegaC  << endl;
 };
 SFWriteMode(ffdatadir+"SelfConsistentMode_guess.ff2m",u1,1i*omegaNL,1i*omegaC,"HarmonicMode",1);
 
@@ -378,7 +378,7 @@ SFWriteMode(ffdatadir+"SelfConsistentMode_guess.ff2m",u1,1i*omegaNL,1i*omegaC,"H
  	ofstream file(ffdatadir+"SecondHarmonicMode_guess.txt");
    	file << u22x[] ;	
    	file << endl << endl << Re << endl
-   	<< endl << 0 << "   " << 2*omegaC  << endl;
+   	<< endl << 0 << endl << 2*omegaC  << endl;
 };
 
 SFWriteMode(ffdatadir+"SecondHarmonicMode_guess.ff2m",u22,2i*omegaNL,2i*omegaC,"SecondHarmonicMode",1);

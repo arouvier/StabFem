@@ -132,5 +132,3 @@ end
 %pdemesh(FFdata.mesh.points,FFdata.mesh.seg,FFdata.mesh.tri) ;
 %axis equal;
 %end
-
-
