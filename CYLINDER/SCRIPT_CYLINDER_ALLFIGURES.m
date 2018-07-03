@@ -72,7 +72,7 @@ saveas(gca,'FIGURES/Cylinder_Mesh',figureformat);
     
 % plot the base flow for Re = 60
 bf.xlim = [-1.5 4.5]; bf.ylim=[0,3];
-plotFF(bf,'ux','Contour','on','Levels',[0 0]);
+figure;plotFF(bf,'ux','Contour','on','Levels',[0 0]);
 %plotFF(bf,'ux');
 %title('Base flow at Re=60 (axial velocity)');
 box on; pos = get(gcf,'Position'); pos(4)=pos(3)*AspectRatio;set(gcf,'Position',pos); % resize aspect ratio
@@ -82,21 +82,21 @@ saveas(gca,'FIGURES/Cylinder_BaseFlowRe60',figureformat);
 
 % plot the eigenmode for Re = 60
 em.xlim = [-2 8]; em.ylim=[0,5];
-plotFF(em,'ux1');
+figure;plotFF(em,'ux1');
 %title('Eigenmode for Re=60');
 box on; pos = get(gcf,'Position'); pos(4)=pos(3)*AspectRatio;set(gcf,'Position',pos); % resize aspect ratio
 set(gca,'FontSize', 18);
 saveas(gca,'FIGURES/Cylinder_EigenModeRe60_AdaptS',figureformat);  % 
 
 em.xlim = [-2 8]; em.ylim=[0,5];
-plotFF(em,'ux1Adj');
+figure;plotFF(em,'ux1Adj');
 %title('Adjoint Eigenmode for Re=60');
 box on; pos = get(gcf,'Position'); pos(4)=pos(3)*AspectRatio;set(gcf,'Position',pos); % resize aspect ratio
 set(gca,'FontSize', 18);
 saveas(gca,'FIGURES/Cylinder_EigenModeAdjRe60',figureformat);
 
 em.xlim = [-2 4]; em.ylim=[0,3];
-plotFF(em,'sensitivity');
+figure;plotFF(em,'sensitivity');
 %title('Structural sensitivity for Re=60');
 box on; pos = get(gcf,'Position'); pos(4)=pos(3)*AspectRatio;set(gcf,'Position',pos); % resize aspect ratio
 set(gca,'FontSize', 18);

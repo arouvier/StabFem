@@ -13,6 +13,7 @@ clc
 
 run('../SOURCES_MATLAB/SF_Start.m');
 
+ff = 'FreeFem++ -nw -v 0';
 ffdatadir = 'WORK/'; %% to be fixed : this should be "./WORK" but some of the solvers are not yet operational
 figureformat = 'png';
 
@@ -24,91 +25,94 @@ Rx = 3;
 
 % Géométrie
 Rayon = 1;
-    DIAMETER = num2str(2*Rayon);
+Diametre = 2*Rayon;
 Epaisseur = 1/(2*Rx);
-    THICKNESS = num2str(Epaisseur);
 Xmin = -20*Rayon;
-    XMIN = num2str(Xmin);
 Xmax = 50*Rayon;
-    XMAX = num2str(Xmax);
 Ymax = 20*Rayon;
-    YMAX = num2str(Ymax);
 
 boxx = [-Epaisseur/2, Epaisseur/2, Epaisseur/2, -Epaisseur/2, -Epaisseur/2];
 boxy = [0, 0, Rayon, Rayon, 0];
 
+% SF_Init
 it=0;
-baseflow=SF_Init('mesh_Disk.edp',[DIAMETER ' ' THICKNESS ' ' XMIN ' ' XMAX ' ' YMAX]);
+baseflow=SF_Init('mesh_Disk.edp',[Diametre Epaisseur Xmin Xmax Ymax]);
 
 % Plot mesh initial
-% baseflow.xlim = [Xmin Xmax]; baseflow.ylim=[0,Ymax];
+figure;
 baseflow.xlabel=('x');baseflow.ylabel=('r');
-baseflow.plottitle = ['Maillage initial du domaine de calcul'];
-plotFF(baseflow,'mesh');
+plotFF(baseflow,'mesh','title',['Maillage initial du domaine de calcul']);
 hold on;fill(boxx,boxy,'y','FaceAlpha', 0.3);hold off;
 
 %% 2 - Génération du BASEFLOW pour un certain Re
 
 % Paramètres de calcul
-Re_start = [10:50:1000];
+Re_start = [10:10:500];
 Omega = [0.];
 Darcy = [1e-1];
 Porosite = [1];
 
-    it=1;
-    for Re = Re_start
-        tic;
-        baseflow = SF_BaseFlow(baseflow,'Re',Re,'Omegax',Omega,'Darcy',Darcy,'Porosity',Porosite);
-        if (it==1) || (mod(it,5) == 0)% && (Re<150)
-%             baseflow=SF_Split(baseflow);
-            baseflow = SF_Adapt(baseflow,'Hmin',1e-6);
-%             %--- Plot mesh intermediaire
+% %             --- Plot mesh intermediaire
 %             baseflow.xlabel=('x');baseflow.ylabel=('r');
-%             baseflow.plottitle = ['Maillage intermediaire it = ' num2str(it) ' du domaine de calcul'];
-%             plotFF(baseflow,'mesh');
+%             baseflow.plottitle = ['Maillage intermediaire Re = ' num2str(baseflow.Re) ' du domaine de calcul'];
+%             plotFF2(baseflow,'mesh');
 %             hold on;fill(boxx,boxy,'y','FaceAlpha', 0.3);hold off;
+
+    it=it;
+    split=1;
+    for Re = Re_start
+        it=it+1
+        baseflow = SF_BaseFlow(baseflow,'Re',Re,'Omegax',Omega,'Darcy',Darcy,'Porosity',Porosite);
+        if (it == 1)
+            %baseflow = SF_Adapt(baseflow);
+            baseflow = SF_Split(baseflow);
         end
-        it = it+1;
-        toc;
+%         if (it==3)
+%             baseflow = SF_Split(baseflow);
+%         end
     end
 
 % Plot mesh final
-% baseflow.xlim = [Xmin Xmax]; baseflow.ylim=[0,Ymax];
-% baseflow.xlabel=('x');baseflow.ylabel=('r');
-% baseflow.plottitle = ['Maillage final du domaine de calcul'];
-% plotFF(baseflow,'mesh');
-% hold on;fill(boxx,boxy,'y','FaceAlpha', 0.3);hold off;
-% 
-% % Plot ux
-% % baseflow.xlim = [-2*Rayon 5*Rayon]; baseflow.ylim=[0,2*Rayon];
-% baseflow.xlabel=('x');baseflow.ylabel=('r');
-% baseflow.plottitle = ['Champ de vitesse u_x pour Re = ' num2str(baseflow.Re)];
-% plotFF(baseflow,'ux','Contour','on','Levels',[0,1e-50]);
-% hold on;plot(boxx, boxy, 'w-');hold off;
-% 
+figure;
+baseflow.xlabel=('x');baseflow.ylabel=('r');
+plotFF(baseflow,'mesh','title',['Maillage final du domaine de calcul']);
+hold on;fill(boxx,boxy,'y','FaceAlpha', 0.3);hold off;
+
+% Plot ux
+figure;
+baseflow.xlim = [Xmin Xmax]; baseflow.ylim=[0,Ymax];
+baseflow.xlabel=('x');baseflow.ylabel=('r');
+plotFF(baseflow,'ux','Contour','on','Levels',[0,1e-50],'title',['Champ de vitesse u_x pour Re = ' num2str(baseflow.Re)],'ColorMap','parula');
+hold on;plot(boxx, boxy, 'w-');hold off;
+
 % % Plot ur
+% figure;
 % baseflow.plottitle = ['Champ de vitesse u_r pour Re = ' num2str(baseflow.Re)];
-% plotFF(baseflow,'ur');
+% plotFF2(baseflow,'ur');
 % hold on;plot(boxx, boxy, 'w-');hold off;
 % 
 % % Plot uphi
+% figure;
 % baseflow.plottitle = ['Champ de vitesse u_\phi pour Re = ' num2str(baseflow.Re)];
-% plotFF(baseflow,'uphi');
+% plotFF2(baseflow,'uphi');
 % hold on;plot(boxx, boxy, 'w-');hold off;
 % 
 % % Plot P
+% figure;
 % baseflow.plottitle = ['Champ de pression P pour Re = ' num2str(baseflow.Re)];
-% plotFF(baseflow,'p');
+% plotFF2(baseflow,'p');
 % hold on;plot(boxx, boxy, 'w-');hold off;
 % 
 % % Plot Vorticité
+% figure;
 % baseflow.plottitle = ['Champ de vorticité \omega pour Re = ' num2str(baseflow.Re)];
-% plotFF(baseflow,'vort');
+% plotFF2(baseflow,'vort');
 % hold on;plot(boxx, boxy, 'w-');hold off;
 % 
 % % Plot Lignes de courant
+% figure;
 % baseflow.plottitle = ['Lignes de courant pour Re = ' num2str(baseflow.Re)];
-% plotFF(baseflow,'psi','Contour','on','Levels',10);
+% plotFF2(baseflow,'psi','Contour','on','Levels',50);
 % hold on;plot(boxx, boxy, 'w-');hold off;
 
 

@@ -96,8 +96,9 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 
 	macro Trainee(u)   
 		(
-			int1d(th,2,91,92,93)(u#p*N.x*2*pi*y)
-			-nu*int1d(th,2,91,92,93)( (2*dx(u#x)*N.x+(dx(u#r)+dy(u#x))*N.y)*2*pi*y)
+			int1d(th,2,91,92,93)(u#x*(u#x*N.x+u#r*N.y+u#phi*N.z)*2*pi*y) /* Momentum flux ? */
+			+ int1d(th,2,91,92,93)(u#p*N.x*2*pi*y)
+			- nu*int1d(th,2,91,92,93)( (2*dx(u#x)*N.x+(dx(u#r)+dy(u#x))*N.y)*2*pi*y)
 		)
 	//EOM
 
@@ -107,8 +108,7 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 // WARNING : momentum flux ???
 	macro CoupleX(u)   
 		(
-			-nu*int1d(th,2,91,92,93)( 
-			(dx(u#phi)*N.x+(-u#phi/y+dy(u#phi))*N.y)*y*2*pi*y)
+			-nu*int1d(th,2,91,92,93)((dx(u#phi)*N.x+(-u#phi/y+dy(u#phi))*N.y)*y*2*pi*y)
 		)
 	//EOM
 
@@ -190,7 +190,7 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 				IFMACRO(ncomponentsBF,3)
 					file << "real Re P1 ux P1 ur P1 uphi P1 p P1 vort P1 psi real iter " ;
 				ENDIFMACRO
-				string PostProcessBaseFlowDescription = "real Cx real Cmx real Darcy real Porosity real Omegax real Flux1 real Flux2 real Flux3"; /* customizable output */ 
+				string PostProcessBaseFlowDescription = "real Fx real Mx real Darcy real Porosity real Omegax real Flux1 real Flux2 real Flux3"; /* customizable output */ 
 				file << PostProcessBaseFlowDescription << endl << endl ; 
 				file << Re << endl;	
 					for (int j=0;j<ut[].n ; j++) file << ut[][j] << endl;
@@ -204,9 +204,9 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 				file << iter << endl;
 				cout << "#### customisable output for WAKE OF A 2D BLUFF BODY : " << endl; 
 				/* Calcul de la trainee */
-				real CxMode = Trainee(u)*8/pi;
-				cout << "#    Cx =  " << CxMode << endl; /* factor 2 because Fx = 1/2 Cx */
-				file << CxMode << " " ; 
+				real FxMode = Trainee(u);
+				cout << "#    Fx =  " << FxMode << endl; /* factor 2 because Fx = 1/2 Cx */
+				file << FxMode << " " ; 
 				/* mesure de la longueur de recirculation 
 				real Lx, Uap, Uav;
 				{
@@ -225,9 +225,9 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 				file << Lx << endl;
 				*/
 				IFMACRO(ncomponentsBF,3)
-					real Cmx = CoupleX(u)*16/pi ;
-					cout << "#    Cx =  " << CxMode << endl; /* factor 2 because Fx = 1/2 Cx */
-					file << Cmx << " " ; 
+					real Mx = CoupleX(u) ;
+					cout << "#    Cx =  " << Mx << endl; /* factor 2 because Fx = 1/2 Cx */
+					file << Mx << " " ; 
 				ENDIFMACRO
 				IFMACRO(ncomponentsBF,2)
 					file << 0 << endl;
@@ -235,7 +235,7 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 				file << Da << endl;
 				file << Porosity << endl;
 				file << Omegax << endl;
-				real Flux1 = int1d(th,91)((u#x*N.x+u#r*N.y)*2*pi*y); /* ancienne version  int1d(th,91)(u#x*2*pi*y); */
+				real Flux1 = int1d(th,91)((u#x*N.x+u#r*N.y)*2*pi*y); 		/* ancienne version  int1d(th,91)(u#x*2*pi*y); */
 				real Flux2 = int1d(th,92)((u#x*N.x+u#r*N.y)*2*pi*y);
 				real Flux3 = int1d(th,93)((u#x*N.x+u#r*N.y)*2*pi*y);
 				cout << "### Porous disk : Flow across disk surfaces " << endl;

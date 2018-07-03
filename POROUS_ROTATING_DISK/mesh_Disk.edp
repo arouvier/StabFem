@@ -80,6 +80,10 @@
 	border lat(t=SFGeomXmax,SFGeomXmin){x=t; y=SFGeomRmax;label=3;};              
 	border in(t=SFGeomRmax,0){x=SFGeomXmin; y=t;label=1;};
 
+/* Maillage */
+	border zoom1(t=0,2*pi){x=0.8*cos(t);y=(SFGeomRdisk)+0.8*sin(t);label=12;};
+
+//2 0.1667 -20 50 20
 /* -----------------
 		MAILLAGE 
     ----------------- */
@@ -88,17 +92,28 @@
 	int nd = 1;
 	int nb = 100;            
 
+/* 	plot(aint(nb*ep)
+		+ obs1(-rayon*nb)
+		+ obs2(-ep*nb)
+		+ obs3(-rayon*nb)
+		+ a1(nd*(-ep/2-SFGeomXmin))
+		+ a2(nd*(SFGeomXmax-ep/2))
+		+ out(SFGeomRmax*nd)
+		+ in(SFGeomRmax*nd)
+		+ lat((SFGeomXmax-SFGeomXmin)*nd),
+		wait=1); */
+	
 /* Construction domaine */
 	mesh th = buildmesh(aint(nb*ep)
-						+ obs1(-rayon*nb)
-						+ obs2(-ep*nb)
-						+ obs3(-rayon*nb)
+						+ obs1(-rayon*nb*2)
+						+ obs2(-ep*nb*2)
+						+ obs3(-rayon*nb*2)
 						+ a1(nd*(-ep/2-SFGeomXmin))
 						+ a2(nd*(SFGeomXmax-ep/2))
 						+ out(SFGeomRmax*nd)
-						+ in(SFGeomRmax*nd)
-						+ lat((SFGeomXmax-SFGeomXmin)*nd));
-	
+						+ lat((SFGeomXmax-SFGeomXmin)*nd)
+						+ in(SFGeomRmax*nd));
+						
 	IFMACRO(FreeFemPlot,Yes)
 		plot(th,wait=1);
 	ENDIFMACRO
