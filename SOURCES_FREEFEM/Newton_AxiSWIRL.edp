@@ -75,7 +75,7 @@
 	
 	cout << " Entrer le Nombre de Reynolds :" << endl;
     cin >>  Re;
-	
+	cout << " 	=> Re = " << endl; 
     cout << " Entrer le taux de rotation :" << endl;
     cin >>  Omegax;
 	
@@ -85,7 +85,7 @@
     cout << " Entrer la porosite du disque :" << endl;
     cin >>  Porosity;
 		// if(Porosity==0){Porosity=1e-30;};
-
+	cout << " 	Starting computation... " << endl; 
 /*  ---------------------------
 		Dimensions Baseflow 
     --------------------------- */
@@ -247,7 +247,7 @@
 		{
 		cout << " NEWTON ITERATION FAILED" << endl;
 		exec("rm "+ffdatadir+"BaseFlow.txt");
-		SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",-1,Da,Porosity,Omegax);
+		SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",-1);
 		}
 /* Si convergence */
 	else
@@ -258,7 +258,7 @@
 		}; 
 		exec("cp "+ffdatadir+"BaseFlow.txt "+ffdatadir+"BaseFlow_guess.txt");
 		
-		SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",iter,Da,Porosity,Omegax); // file in .ff2ml format for StabFem driver
+		SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",iter); // file in .ff2ml format for StabFem driver
 		
 		IFMACRO(FreeFemPlot,Yes)
 			plot(upsi,wait=1,value=false,nbiso=50,fill=0,cmm="Lignes courant - Re="+int(Re)+".");

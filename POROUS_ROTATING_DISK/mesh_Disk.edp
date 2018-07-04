@@ -189,4 +189,4 @@
 		macro Omegax 0//EOM
 	ENDIFMACRO
 
-	SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",0,Da,Porosity,Omegax);
+	SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",0);

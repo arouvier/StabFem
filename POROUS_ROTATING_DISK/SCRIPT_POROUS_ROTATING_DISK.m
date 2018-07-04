@@ -47,7 +47,7 @@ hold on;fill(boxx,boxy,'y','FaceAlpha', 0.3);hold off;
 %% 2 - Génération du BASEFLOW pour un certain Re
 
 % Paramètres de calcul
-Re_start = [10:10:500];
+Re_start = [10];
 Omega = [0.];
 Darcy = [1e-1];
 Porosite = [1];
@@ -65,7 +65,7 @@ Porosite = [1];
         baseflow = SF_BaseFlow(baseflow,'Re',Re,'Omegax',Omega,'Darcy',Darcy,'Porosity',Porosite);
         if (it == 1)
             %baseflow = SF_Adapt(baseflow);
-            baseflow = SF_Split(baseflow);
+            baseflow = SF_Adapt(baseflow);
         end
 %         if (it==3)
 %             baseflow = SF_Split(baseflow);

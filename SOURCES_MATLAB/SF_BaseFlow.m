@@ -58,7 +58,7 @@ global ff ffMPI ffdir ffdatadir sfdir verbosity
    if(isfield(baseflow,'Darcy')) DarcyDefault = baseflow.Darcy; else DarcyDefault = 0; end
    addParameter(p,'Darcy',DarcyDefault,@isnumeric); % For porous body
    
-   if(isfield(baseflow,'Porosity')) PorosityDefault = baseflow.PorosityDefault; else PorosityDefault = 0.95;  end
+   if(isfield(baseflow,'Porosity')) PorosityDefault = baseflow.Porosity; else PorosityDefault = 0.95;  end
    addParameter(p,'Porosity',PorosityDefault,@isnumeric); % For porous body too
    
    addParameter(p,'type','Normal',@ischar); % mode type 

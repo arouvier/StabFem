@@ -39,7 +39,7 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
     ------------------- */
 
 	IFMACRO(!problemtype)
-		macro problemtype "AxiXR"//EOM
+		macro problemtype AxiXR //EOM
 	ENDIFMACRO
 
  /* ---------------------
@@ -157,7 +157,7 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 		SFWriteBaseFlow 
     ----------------------- */
 
-	macro SFWriteBaseFlow(filename,u,typeFlow,iter,Da,Porosity,Omegax)
+	macro SFWriteBaseFlow(filename,u,typeFlow,iter)
 		if(iter>=0)
 			{
 			fespace p1forff2m(th,P1);
