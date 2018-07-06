@@ -46,6 +46,9 @@
 	verbosity = 0;
 	
 	mesh th = readmesh(ffdatadir+"mesh.msh");
+	IFMACRO(FreeFemPlot,Yes)
+		plot(th,wait=0);
+	ENDIFMACRO
 
 /*  ------------------
 		Espaces EF 
@@ -75,7 +78,6 @@
 	
 	cout << " Entrer le Nombre de Reynolds :" << endl;
     cin >>  Re;
-	cout << " 	=> Re = " << endl; 
     cout << " Entrer le taux de rotation :" << endl;
     cin >>  Omegax;
 	
@@ -85,7 +87,7 @@
     cout << " Entrer la porosite du disque :" << endl;
     cin >>  Porosity;
 		// if(Porosity==0){Porosity=1e-30;};
-	cout << " 	Starting computation... " << endl; 
+		
 /*  ---------------------------
 		Dimensions Baseflow 
     --------------------------- */
@@ -185,7 +187,7 @@
 					- 2*nu*S2(x,y)*(D(0,du):D(0,v))
 					-IsInObject(x,y)*nu*(1/Da)*(dux*vx+dur*vr+duphi*vphi)
 				)*y)
-		- int1d(th,91,92,93)(S2(x,y)*((D(0,du)*[N.x,N.y,0])'*[vx,vr,vphi])*y)
+		- int1d(th,91,92,93)((1/Porosity-1)*((D(0,du)*[N.x,N.y,0])'*[vx,vr,vphi])*y)
 		+ int2d(th)(
 				(	vp*div(0,up)
 					- .5*S1(x,y)*Conv(0,up,0,up,v)
@@ -193,13 +195,13 @@
 					- 2*nu*S2(x,y)*(D(0,up):D(0,v))
 					- IsInObject(x,y)*nu*(1/Da)*(upx*vx+upr*vr+(upphi-Omegax*y)*vphi)
 				)*y)
-		- int1d(th,91,92,93)(S2(x,y)*((D(0,u)*[N.x,N.y,0])'*[vx,vr,vphi])*y)
+		- int1d(th,91,92,93)((1/Porosity-1)*((D(0,u)*[N.x,N.y,0])'*[vx,vr,vphi])*y)
 		+ BoundaryconditionsBaseFlow(du,up,v);
     
 /* Paramètres de l'algorithme de Newton  */          
 	real tolerance = 2e-12;
 	real ener = 10;
-	int Nitermax = 20;
+	int Nitermax = 30;
 	int iter = 0;
 	
 /* Algorithme de Newton  */
@@ -261,16 +263,16 @@
 		SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",iter); // file in .ff2ml format for StabFem driver
 		
 		IFMACRO(FreeFemPlot,Yes)
-			plot(upsi,wait=1,value=false,nbiso=50,fill=0,cmm="Lignes courant - Re="+int(Re)+".");
-			plot(ux,wait=1,value=true,nbiso=50,fill=1,cmm="final Ux - Re="+int(Re)+".");
-			plot(ur,wait=1,value=true,nbiso=50,fill=1,cmm="final Ur - Re="+int(Re)+".");
-			plot(uphi,wait=1,value=true,nbiso=50,fill=1,cmm="final Uphi - Re="+int(Re)+".");
+			plot(upsi,wait=1,value=false,nbiso=100,fill=0,cmm="Lignes courant - Re="+real(Re)+" - Da="+real(Da)+" - eps="+real(Porosity)+" - Omega="+real(Omegax)+".");
+			plot(ux,wait=1,value=true,nbiso=50,fill=1,cmm="final Ux - Re="+real(Re)+" - Da="+real(Da)+" - eps="+real(Porosity)+" - Omega="+real(Omegax)+".");
+			plot(ur,wait=1,value=true,nbiso=50,fill=1,cmm="final Ur - Re="+real(Re)+" - Da="+real(Da)+" - eps="+real(Porosity)+" - Omega="+real(Omegax)+".");
+			plot(uphi,wait=1,value=true,nbiso=50,fill=1,cmm="final Uphi - Re="+real(Re)+" - Da="+real(Da)+" - eps="+real(Porosity)+" - Omega="+real(Omegax)+".");
 		ENDIFMACRO
 		  
 		Mh uphiphi = uphi;
 		cout << "Uphi max : " << uphi[].max;
 		
 		IFMACRO(FreeFemPlot,Yes)
-			plot(up,wait=1,value=true,nbiso=50,fill=1,cmm="final P - Re="+int(Re)+".");
+			plot(up,wait=1,value=true,nbiso=50,fill=1,cmm="final P - Re="+real(Re)+" - Da="+real(Da)+" - eps="+real(Porosity)+" - Omega="+real(Omegax)+".");
 		ENDIFMACRO
 		};

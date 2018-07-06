@@ -66,14 +66,15 @@
     --------------- */
 
 	real epz = (ep/2)*2;
-	real hz  = (SFGeomRdisk)*1.1;
+	real epzz = (ep/2)*10;
+	real hz  = (SFGeomRdisk)*1.5;
 	
 /* Axe de symetrie */
 	border a1(t=SFGeomXmin,-epz){x=t; y=0;label=6;};
-	border a2(t=epz,SFGeomXmax){x=t; y=0;label=6;};
+	border a2(t=epzz,SFGeomXmax){x=t; y=0;label=6;};
 	border aint(t=-ep/2,ep/2){x=t;y=0;label=6;};
 	border az1(t=-epz,-ep/2){x=t; y=0;label=6;};
-	border az2(t=ep/2,epz){x=t; y=0;label=6;};
+	border az2(t=ep/2,epzz){x=t; y=0;label=6;};
 
 /* Cylindre (sans axe symétrie) */
 	border obs1(t=0.,rayon){x=-ep/2; y=t ;label=91;};
@@ -88,9 +89,9 @@
 
 /* Maillage */
 	border z1(t=0,hz){x=-epz;y=t;label=12;};
-	border z2(t=-epz,epz){x=t;y=hz;label=12;};
-	border z3(t=hz,0){x=epz;y=t;label=12;};
-	border z4(t=epz,SFGeomXmax){x=t;y=hz;label=12;};
+	border z2(t=-epz,epzz){x=t;y=hz;label=12;};
+	border z3(t=hz,0){x=epzz;y=t;label=12;};
+	border z4(t=epzz,SFGeomXmax){x=t;y=hz;label=12;};
 
 //2 0.1667 -20 50 20
 /* -----------------
@@ -99,7 +100,7 @@
 
 /* Densité de maillage */	
 	real nd = 0.5;
-	int nb = 100;            
+	int nb = 80;            
 
 /* 	plot(obs1(-rayon*nb*3)
 		+ obs2(-ep*2*nb*3)
@@ -121,12 +122,12 @@
 	
 /* Construction domaine */
 	mesh th = buildmesh(obs1(-rayon*nb*4)
-		+ obs2(-ep*2*nb*4)
+		+ obs2(-ep*2*nb*2)
 		+ obs3(-rayon*nb*4)
 		+ a1(nd*(-ep/2-SFGeomXmin))
 		+ az1(nb*(epz-(ep/2)))
 		+ aint(epz*2*nb)
-		+ az2(nb*(epz-(ep/2)))
+		+ az2(nb*(epzz-(ep/2)))
 		+ a2(nd*(SFGeomXmax-epz/2)*(10+9*((epz)/(SFGeomRmax-epz))))
 		+ out1(hz*nd*5)
 		+ out2((SFGeomRmax-hz)*nd)
@@ -212,4 +213,4 @@
 		macro Omegax 0//EOM
 	ENDIFMACRO
 
-	SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",0,Da,Porosity,Omegax);
+	SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",u,"BaseFlow",0);

@@ -29,9 +29,7 @@
 //
 
 
-
-
-	verbosity = 0;
+	include "SF_Geom.edp"; 
 	include "Macros_StabFem.edp";
 	
 	string type;
@@ -110,25 +108,26 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
         file >> uB[];
         [vBS,uBS,wBS,pBS] = [vB,uB,0,pB];
 		file >> Reans;
-        }
-        else if(NdimBaseFlow == NdimUVWP) 
-        {
+    }
+    else if(NdimBaseFlow == NdimUVWP) 
+    {
         cout << "Ndim = " << NdimUVWP << " : reading UVWP baseflow " << endl;
         ifstream file(ffdatadir+"BaseFlow.txt");
         file >> uBS[]; 
 		file >> Reans;
-        }
+    }
 	else if(NdimBaseFlow == NdimUComp) 
-        {
+    {
         cout << "Ndim = " << NdimUComp << " : reading UComp baseflow " << endl;
         ifstream file(ffdatadir+"BaseFlow.txt");
         file >> uBc[]; 
-	file >> Reans;
-        }
-        else 
-        {
+		file >> Reans;
+    }
+    else 
+    {
         cout << " Error : Wrong dimension For BaseFlow_guess.txt file" << endl;
-        };
+    };
+	
     cout << " lecture of Base flow : Reynolds number = " << Reans << endl;
 
 	Re = Reans;
@@ -139,13 +138,14 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
 // selection of the type of adaptation to be done 
 	if(type=="BFonly")
 	{
-	if(NdimBaseFlow == NdimUComp) {[vBS,uBS,wBS,pBS] = [vBc,uBc,0,pBc];}
-	thnew = adaptmesh(th,[vBS,uBS,wBS,pBS],
+		if(NdimBaseFlow == NdimUComp)
+		{
+			[vBS,uBS,wBS,pBS] = [vBc,uBc,0,pBc];
+		}
+		thnew = adaptmesh(th,[vBS,uBS,wBS,pBS],
 						nbvx=Nbvx,err=error,ratio=Ratio,hmax=Hmax,hmin=Hmin,thetamax=Thetamax,
 						verbosity=Verbosity,splitpbedge=Splitpbedge,splitin2=Splitin2);		
-	}
-		
-				
+	}		
 	else if(type=="UVP")
 	{
 		cout << " ADAPTATION TO FIELD WITH UVP STRUCTURE" << endl;	
@@ -216,13 +216,16 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
 	}
 
 
-	IFMACRO(FREEFEMPLOTS,YES)		
-	plot(thold,wait=1);
-	plot(thnew,wait=1);
+	IFMACRO(FreeFemPlot,Yes)		
+		plot(thold,cmm="Old",wait=1);
+		plot(thnew,cmm="New",wait=1);
 	ENDIFMACRO
 	
 	savemesh(thnew,ffdatadir+"mesh.msh");
 	SFWriteMesh(ffdatadir+"mesh.ff2m",thnew);
+	
+	savemesh(thnew,ffdatadir+"mesh_adapt.msh");
+	SFWriteMesh(ffdatadir+"mesh_adapt.ff2m",thnew);
 
 
 	
@@ -232,13 +235,16 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
     fespace femp0N(thnew,P0);
     fespace femp2xfemp2xfemp1N(thnew,[P2,P2,P1]);
     fespace femp2xfemp2xfemp2xfemp1N(thnew,[P2,P2,P2,P1]);
-    fespace XXxxxHN(thnew,[P2,P2,P1,P1,P1]); /// 
+    fespace XXxxxHN(thnew,[P2,P2,P1,P1,P1]); ///
+	
     femp2xfemp2xfemp1N [uNx,uNy,uNp];
-	femp2xfemp2xfemp2xfemp1N [uNCx,uNCr,uNCphi,uNCp];
+	femp2xfemp2xfemp2xfemp1N [uNnx,uNny,uNnphi,uNnp];
     XXxxxHN[uBcN,vBcN,pBcN,TBcN,rhoBcN];
   
-  femp1N uNCpsi = 0; femp1N uNNphi = 0;femp1N uNNpsi = 0; real Da = 1; real Porosity = 1; real Omegax = 1;// hack for Adrien
-    
+    [uNx,uNy,uNp] = [vB,uB,pB]; // interpolation of base flow
+//	plot(uBN,fill=1,wait=1);
+//	plot(vBN,fill=1,wait=1);
+//	plot(pBN,fill=1,wait=1);
 
 	Re = Reans;
 	real nu = 1/(Re+1e-30);
@@ -249,68 +255,52 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
 		ofstream U(ffdatadir+"BaseFlow_guess.txt");		
 		U << uBcN[];
 		U << endl << endl <<  Re << endl;
-		th = thnew;
-		XXxxxHN[uNNc,vNNc,pNNc,TNNc,rhoNNc];
-	    [uNNc,vNNc,pNNc,TNNc,rhoNNc] = [uBc,vBc,pBc,TBc,rhoBc]; // interpolation of base flow
-	    IFMACRO(problemtype,2DComp)
-		SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",uNNc,"BaseFlow",1);
-		ENDIFMACRO
 	}
-	else if(NdimBaseFlow == NdimUVWP) // Case base flow is UVWP
+	else if(NdimBaseFlow = NdimUVWP)
 	{
-		[uNCx,uNCr,uNCphi,uNCp] = [vBS,uBS,wBS,pBS];
+		[uNnx,uNny,uNnphi,uNnp] = [vBS,uBS,wBS,pBS];
 		ofstream U(ffdatadir+"BaseFlow_guess.txt");		
-		U << uBcN[];
+		U << uNnx[];
 		U << endl << endl <<  Re << endl;
-		th = thnew;	    
-		SFWriteBaseFlow(ffdatadir+"BaseFlow_Adapted.ff2m",uNC,"BaseFlow",1);
 	}
-	else // case base flow is UVP
-	{
-		[uNx,uNy,uNp] = [vB,uB,pB]; // interpolation of base flow 
-		
+	else{
+		[uNx,uNy,uNp] = [vB,uB,pB];
 		ofstream U(ffdatadir+"BaseFlow_guess.txt");		
 		U << uNx[];
 		U << endl << endl <<  Re << endl;
-		th = thnew;
-		IFMACRO(problemtype,2D)
-	      SFWriteBaseFlow(ffdatadir+"BaseFlow_Adapted.ff2m",uN,"BaseFlow",1);
-		ENDIFMACRO
-		//IFMACRO(problemtype,AxiXR)
-		  femp2xfemp2xfemp1N [uNNx,uNNr,uNNp] = [uNx,uNy,uNp];
-		  SFWriteBaseFlow(ffdatadir+"BaseFlow_Adapted.ff2m",uNN,"BaseFlow",1);
-		//ENDIFMACRO
-	}
- 
-  //  IFMACRO(problemtype,2D)
-  //  cout << " writing BaseFlow_Adapted.ff2m" << endl;
-  //  [uNx,uNy,uNp] = [vB,uB,pB]; 
-  //  plot(uNx,wait=1);
-  //  th = thnew;
-//	SFWriteBaseFlow(ffdatadir+"BaseFlow_Adapted.ff2m",uN,"BaseFlow",1);
-//		ofstream U(ffdatadir+"BaseFlow_Adapted.txt");		
- //       U << uNx[];
-  //      U << endl << endl <<  Re << endl;
-//	ENDIFMACRO
 
-	//IFMACRO(problemtype,AxiXR)
-//	cout << " writing BaseFlow_Adapted.ff2m" << endl;
-//	femp2xfemp2xfemp1N [uNNx,uNNr,uNNp];
-//	[uNNx,uNNr,uNNp] = [vB,uB,pB];
-//	th = thnew;
-//	SFWriteBaseFlow(ffdatadir+"BaseFlow_Adapted.ff2m",uNN,"BaseFlow",1);
-//	[uNx,uNy,uNp] = [vB,uB,pB];
-//	ofstr/eam U(ffdatadir+"BaseFlow_Adapted.txt");		
- //       U << uNx[];
-  //      U << endl << endl <<  Re << endl;
-	//ENDIFMACRO
-	
-//	IFMACRO(problemtype,2DComp)
-//	XXxxxHN[uNNc,vNNc,pNNc,TNNc,rhoNNc];
-//	[uNNc,vNNc,pNNc,TNNc,rhoNNc] = [uBc,vBc,pBc,TBc,rhoBc]; // interpolation of base flow
-//	SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",uNNc,"BaseFlow",1);
-//	ENDIFMACRO
-	
+	}
+
+// hack    
+    IFMACRO(problemtype,2D)
+    cout << " writing BaseFlow_Adapted.ff2m" << endl;
+    [uNx,uNy,uNp] = [vB,uB,pB]; 
+    plot(uNx,wait=1);
+    th = thnew;
+	//SFWriteBaseFlow(ffdatadir+"BaseFlow_adaptguess.ff2m",uN,"BaseFlow",1);
+		ofstream U(ffdatadir+"BaseFlow_adaptguess.txt");		
+        U << uNx[];
+        U << endl << endl <<  Re << endl;
+	ENDIFMACRO
+
+	IFMACRO(problemtype,AxiXR)
+		femp2xfemp2xfemp2xfemp1N [uNNx,uNNr,uNNphi,uNNp];
+		[uNNx,uNNr,uNNphi,uNNp] = [vBS,uBS,wBS,pBS];
+		th = thnew;
+		//SFWriteBaseFlow(ffdatadir+"BaseFlow_Adapted.ff2m",uNN,"BaseFlow",1);
+		[uNNx,uNNr,uNNphi,uNNp] = [vBS,uBS,wBS,pBS];
+		ofstream U(ffdatadir+"BaseFlow_adaptguess.txt");		
+			U << uNx[];
+			U << endl << endl <<  Re << endl;
+	ENDIFMACRO
+		
+	IFMACRO(problemtype,"2DComp")
+	XXxxxHN[uNNc,vNNc,pNNc,TNNc,rhoNNc];
+	[uNNc,vNNc,pNNc,TNNc,rhoNNc] = [uBc,vBc,pBc,TBc,rhoBc]; // interpolation of base flow
+	SFWriteBaseFlow(ffdatadir+"BaseFlow.ff2m",uNNc,"BaseFlow",1);
+	ENDIFMACRO
+
+// end of hack : this is because SFWriteBaseFlow expects different component names for 2D and axi cases !
 
 
 // INTERPOLATE THE DATA AND WRITE TO FILE
@@ -367,7 +357,6 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
 
  		     	 
      	
-
 
 
 

@@ -63,8 +63,8 @@ int bclat=4,bcinlet=1,bcoutflow=3,bcwall=2,bcaxis=6;
 	macro IsInObject(x,y) (1*(y<SFGeomRdisk)*(abs(x)<SFGeomHdisk/2))//EOM
 
 	macro S1(x,y) (1+((1/Porosity^2-1)*IsInObject(x,y)))//EOM
-	macro S2(x,y) (1+((1/Porosity-1)*IsInObject(x,y))) //EOM
-	
+	macro S2(x,y) (1+((1/Porosity-1)*IsInObject(x,y)))//EOM
+	//macro S2jump (1/Porosity-1)//EOM
 	
  /* ----------------------------------
 		BoundaryconditionsBaseFlow 
