@@ -30,22 +30,22 @@ else
     Re_start = [10 , 100 , 200]; % values of Re for progressive increasing up to end
     for Rei = Re_start
         bf=SF_BaseFlow(bf,'Re',Rei); 
-        bf=SF_Adapt(bf);
+        bf=SF_Adapt(bf,'Hmax',0.25);
     end
     
  % optional : adapting mesh on eigenmode structure as well      
  [ev,eigenmode] = SF_Stability(bf,'m',1,'shift',0.021+1.771i,'nev',1,'type','S');
- [bf,eigenmode]=SF_Adapt(bf,eigenmode);  
- [bf,eigenmode]=SF_Adapt(bf,eigenmode); 
+ [bf,eigenmode]=SF_Adapt(bf,eigenmode,'Hmax',0.25);  
+ [bf,eigenmode]=SF_Adapt(bf,eigenmode,'Hmax',0.25); 
 
 
 
 %mesh = importFFmesh([ffdatadir 'mesh.msh'],'seg'); 
-plotFF(bf,'mesh'); % to plot the mesh
+figure();plotFF(bf,'mesh'); % to plot the mesh
 
 bf.mesh.xlim=[-1,3]; %x-range for plots
 bf.mesh.ylim=[0,1];
-plotFF(bf,'ux');  % to plot the bf
+figure();plotFF(bf,'ux');  % to plot the bf
 
 end
 

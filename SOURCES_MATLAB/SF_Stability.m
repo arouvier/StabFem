@@ -1,6 +1,6 @@
 function [eigenvalues,eigenvectors] = SF_Stability(baseflow,varargin)
 
-% StabFem wrapper for Eigenvaluee calculations 
+% StabFem wrapper for Eigenvalue calculations
 %
 % usage : [eigenvectors] = SF_Stability(field, [,param1,value1] [,param2,value2] [...])
 %
@@ -76,6 +76,16 @@ persistent eigenvaluesPrev % for sort of type 'cont'
    if(isfield(baseflow,'Ma')) MaDefault = baseflow.Ma ; else MaDefault = 0.01; end;
    addParameter(p,'Ma',MaDefault,@isnumeric);
    
+    % parameter for Rotating Porous Case
+   if(isfield(baseflow,'Omegax')) OmegaxDefault = baseflow.Omegax ; else OmegaxDefault = 0.; end;
+   addParameter(p,'Omegax',OmegaxDefault,@isnumeric);
+   
+   if(isfield(baseflow,'Darcy')) DarcyDefault = baseflow.Darcy ; else DarcyDefault = 0.1; end;
+   addParameter(p,'Darcy',DarcyDefault,@isnumeric);
+   
+   if(isfield(baseflow,'Porosity')) PorosityDefault = baseflow.Porosity ; else PorosityDefault = 0.95; end;
+   addParameter(p,'Porosity',PorosityDefault,@isnumeric);
+  
    %paramaters for axisymmetric case
    addParameter(p,'m',1,@isnumeric);
  
@@ -148,7 +158,7 @@ switch ffmesh.problemtype
     
      mydisp(1,['      ### FUNCTION SF_Stability POROUS : computation of ' num2str(p.Results.nev) ' eigenvalues/modes (DIRECT) with FF solver']);
      mydisp(1,['      ### USING Axisymmetric Solver WITH POROSITY AND SWIRL']);
-     argumentstring = [ num2str(p.Results.Re) ' ' num2str(baseflow.Porosity) ' '  num2str(real(shift)) ' ' num2str(imag(shift))... 
+     argumentstring = [ num2str(p.Results.Re) ' ' num2str(baseflow.Omegax) ' ' num2str(baseflow.Darcy) ' ' num2str(baseflow.Porosity) ' '  num2str(real(shift)) ' ' num2str(imag(shift))... 
                              ' ' num2str(p.Results.m) ' ' p.Results.type ' ' num2str(p.Results.nev) ];
      solvercommand = ['echo ' argumentstring ' | ' ff ' ' ffdir 'Stab_Axi_Porous.edp'];
      status = mysystem(solvercommand);        

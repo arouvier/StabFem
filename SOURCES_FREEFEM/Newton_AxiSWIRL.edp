@@ -228,10 +228,10 @@
 		Fonction de courant 
     --------------------------- */		
 	
-	Mh rot;
+	Mh vort;
 	Xh upsi,vpsi;
 	
-	//rot = dx(ub2)-dy(ub1);
+	vort = (dy(ux)-dx(ur)); /* vorticity */
 		
 	solve Courant(upsi,vpsi) =
 		int2d(th)(1/y*(dx(upsi)*dx(vpsi)+dy(upsi)*dy(vpsi)))

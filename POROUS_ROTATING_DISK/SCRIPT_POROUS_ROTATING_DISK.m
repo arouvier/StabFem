@@ -106,7 +106,7 @@ figure;
 plotFF(baseflow,'psi','Contour','on','Levels',50,'title',['Lignes de courant pour Re = ' num2str(baseflow.Re)]);
 hold on;plot(boxx, boxy, 'w-');hold off;
 
-%% Chapter 2 : Spectrum exploration
+%% 3 - Spectrum exploration
 
 % first exploration for m=1
 [ev1,em1] = SF_Stability(baseflow,'m',1,'shift',1-.5i,'nev',20,'PlotSpectrum','yes');
@@ -117,7 +117,7 @@ figure;
 plot(real(ev1),imag(ev1),'+',real(ev2),imag(ev2),'+',real(ev3),imag(ev3),'+');
 title(['spectrum for m=1, Re=' num2str(baseflow.Re) ', Omega=' num2str(Omega) ', Porosity=' num2str(Porosite)])
 
-%% Chapter 3 : stability curves
+%% 4 - Sability curves
 
 Re_LIN = [80 : 2 : 95];
 

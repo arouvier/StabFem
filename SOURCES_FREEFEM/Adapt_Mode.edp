@@ -217,8 +217,8 @@ cout << endl << "#### Mesh information BEFORE ADAPT :" << endl;
 
 
 	IFMACRO(FreeFemPlot,Yes)		
-		plot(thold,cmm="Old",wait=1);
-		plot(thnew,cmm="New",wait=1);
+		plot(thold,cmm="Old mesh",wait=1);
+		plot(thnew,cmm="New mesh",wait=1);
 	ENDIFMACRO
 	
 	savemesh(thnew,ffdatadir+"mesh.msh");
